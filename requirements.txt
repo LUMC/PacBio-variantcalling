@@ -3,10 +3,8 @@
 # activated.
 # For more information on how to set up conda with bioconda channel see:
 # http://bioconda.github.io/#install-conda
-# This file can be installed with "conda install --file requirements-test.txt".
+# This file can be installed with "conda install --file requirements.txt".
 
 pytest-workflow
 cromwell=53.1
 womtool=53.1
-miniwdl
-wdl-aid

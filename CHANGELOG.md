@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 
 v2.0.0-dev
 ---------------------------
++ Move pipeline out of BioWDL.
 + Make g.vcf output optional, because generating a g.vcf with DeepVariant is
 extremely slow. This changes the default behaviour.
 

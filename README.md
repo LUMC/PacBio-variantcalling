@@ -4,7 +4,7 @@ Variant calling workflow for targeted PacBio read data.
 ## Documentation
 To download the pipeline and all associated files, you can run
 ```bash
-git clone git@github.com:biowdl/PacBio-variantcalling.git
+git clone git@github.com:LUMC/PacBio-variantcalling.git
 git submodule update --init --recursive
 ```
 
@@ -13,7 +13,7 @@ You can install the
 that is used to execute the pipeline using
 ```bash
 cd PacBio-variantcalling
-conda install --file requirements-test.txt
+conda install --file requirements.txt
 ```
 
 You can test the workflow using the following two commands. The first command

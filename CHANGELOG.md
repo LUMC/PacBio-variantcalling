@@ -8,7 +8,7 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-v2.0.0-dev
+v2.0.1
 ---------------------------
 + Move pipeline out of BioWDL.
 + Make g.vcf output optional, because generating a g.vcf with DeepVariant is

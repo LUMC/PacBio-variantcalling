@@ -1,5 +1,10 @@
 # PacBio-variantcalling
-Variant calling workflow for targeted PacBio read data.
+
+[![Build Status](https://travis-ci.com/LUMC/PacBio-variantcalling.svg?branch=master)](https://travis-ci.com/LUMC/PacBio-variantcalling)
+[![image](https://img.shields.io/github/release/LUMC/PacBio-variantcalling.svg)](https://github.com/LUMC/PacBio-variantcalling/releases)
+[![image](https://img.shields.io/github/release-date/LUMC/PacBio-variantcalling.svg)](https://github.com/LUMC/PacBio-variantcalling/releases)
+
+------------------------------------------------------------------------
 
 ## Documentation
 To download the pipeline and all associated files, you can run

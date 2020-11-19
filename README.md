@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/LUMC/PacBio-variantcalling.svg?branch=master)](https://travis-ci.com/LUMC/PacBio-variantcalling)
 [![image](https://img.shields.io/github/release/LUMC/PacBio-variantcalling.svg)](https://github.com/LUMC/PacBio-variantcalling/releases)
 [![image](https://img.shields.io/github/release-date/LUMC/PacBio-variantcalling.svg)](https://github.com/LUMC/PacBio-variantcalling/releases)
+[![DOI](https://zenodo.org/badge/314152152.svg)](https://zenodo.org/badge/latestdoi/314152152)
 
 ------------------------------------------------------------------------
 

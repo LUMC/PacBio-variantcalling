@@ -28,7 +28,7 @@ install:
   - conda env create --file environment.yml
 
 before_script:
-  - source activate Pacbio-variantcalling
+  - source activate PacBio-variantcalling
 
 script:
   - travis_wait 60 pytest --keep-workflow-wd-on-fail --tag $TEST tests/

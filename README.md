@@ -10,21 +10,22 @@
 ## Documentation
 To download the pipeline and all associated files, you can run
 ```bash
-git clone git@github.com:LUMC/PacBio-variantcalling.git
+git clone https://github.com/LUMC/PacBio-variantcalling.git
+cd PacBio-variantcalling
 git submodule update --init --recursive
 ```
 
-You can install the
+Next, install the
 [conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
 that is used to execute the pipeline using
 ```bash
-cd PacBio-variantcalling
 conda install --file requirements.txt
 ```
 
 You can test the workflow using the following two commands. The first command
 runs the sanity checks to make sure everything required is installed. The
 second command will run the integration tests.
+
 ```bash
 pytest --kwd tests --tag sanity
 pytest --kwd tests --tag integration

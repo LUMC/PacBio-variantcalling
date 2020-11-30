@@ -1,0 +1,16 @@
+# These are the programs used for executing this workflow.
+# These requirements can be installed with conda with the bioconda channel
+# activated.
+# For more information on how to set up conda with bioconda channel see:
+# http://bioconda.github.io/#install-conda
+# This file can be installed with "conda env create --file environment.yml".
+
+name: PacBio-variantcalling
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - pytest-workflow>=1.4
+  - cromwell=53.1
+  - womtool=53.1

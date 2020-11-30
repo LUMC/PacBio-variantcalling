@@ -17,9 +17,10 @@ git submodule update --init --recursive
 
 Next, install the
 [conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
-that is used to execute the pipeline using
+that is used to execute the pipeline, and activate the environment
 ```bash
-conda install --file requirements.txt
+conda env create --file environment.yml
+conda activate PacBio-variantcalling
 ```
 
 You can test the workflow using the following two commands. The first command

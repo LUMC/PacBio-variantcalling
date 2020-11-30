@@ -25,7 +25,10 @@ stages:
 stage: test
 
 install:
-  - conda install --file requirements.txt
+  - conda env create --file environment.yml
+
+before_script:
+  - conda activate Pacbio-variantcalling
 
 script:
   - travis_wait 60 pytest --keep-workflow-wd-on-fail --tag $TEST tests/

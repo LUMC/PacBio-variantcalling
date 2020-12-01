@@ -29,6 +29,7 @@ import "tasks/pbmm2.wdl" as pbmm2
 import "tasks/whatshap.wdl" as whatshap
 import "multiqc_pgx.wdl" as multiqc
 import "tasks/chunked-scatter.wdl" as chunkedScatter
+import "pbmarkdup.wdl" as pbmarkdup
 
 workflow VariantCalling {
     input {
@@ -97,9 +98,20 @@ workflow VariantCalling {
             scatterSizeMillions = 350
     }
 
+
     scatter (pair in SampleBam) {
         # We need to know the order of the samples for MultiQC_PGx
         String sampleName = pair.left
+
+        # Run markduplicates on a per sample bases, that should be easier than
+        # running it on the CCS output file (since we don't need to compare
+        # reads across samples).
+        call pbmarkdup.Pbmarkdup as pbmarkdup {
+            input:
+                in_file = pair.right,
+                out_file = sampleName + ".pbmarkdup.bam",
+                log_file = sampleName + ".pbmarkdup.log"
+        }
 
         call pbmm2.Mapping as mapping {
             input:

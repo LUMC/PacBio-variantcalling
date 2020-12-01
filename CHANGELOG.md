@@ -9,6 +9,8 @@ that users understand how the changes affect the new version.
 -->
 
 v2.0.3-dev
++ Upgrade MultiQC_PGx to latest version.
++ Update documentation and add conda environment file.
 ---------------------------
 
 v2.0.2

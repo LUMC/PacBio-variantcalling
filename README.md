@@ -10,21 +10,23 @@
 ## Documentation
 To download the pipeline and all associated files, you can run
 ```bash
-git clone git@github.com:LUMC/PacBio-variantcalling.git
+git clone https://github.com/LUMC/PacBio-variantcalling.git
+cd PacBio-variantcalling
 git submodule update --init --recursive
 ```
 
-You can install the
+Next, install the
 [conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
-that is used to execute the pipeline using
+that is used to execute the pipeline, and activate the environment
 ```bash
-cd PacBio-variantcalling
-conda install --file requirements.txt
+conda env create --file environment.yml
+conda activate PacBio-variantcalling
 ```
 
 You can test the workflow using the following two commands. The first command
 runs the sanity checks to make sure everything required is installed. The
 second command will run the integration tests.
+
 ```bash
 pytest --kwd tests --tag sanity
 pytest --kwd tests --tag integration
@@ -46,15 +48,47 @@ pipeline has completed, you can find the full execution folder in
 been copied to the `test-output` folder in the current directory, as is
 specified in the `tests/data/config/cromwell.options.json` options file.
 
-For your own analysis, you can take the `variant_calling.json` file as a
-starting point, and update the `subreadsFile` and `barcodesFasta` to point to
-your own data. It is probably also best to leave out
-`"VariantCalling.ccsChunks": "1"`, since that prevents running the CCS step in
-parallel. By default, the pipeline will split the CSS step in 20 chunks to
-speed up the analysis.
+### Pipeline configuration file
+To generate an input configuration file for the PacBio pipeline, please run the
+following command.
 
-By default, the g.vcf files are not part of the pipeline output. If you want to
-include the g.vcf files in the pipeline output, please specify
-`"VariantCalling.generateGVCF: true"`. **Important:** specifying
-`"VariantCalling.generateGVCF: true"` in combination with
-`"VariantCalling.useDeepVariant: true"` is **extrememely** slow.
+```bash
+womtool inputs --optional-inputs false PacBio-variantcalling.wdl
+{
+  "VariantCalling.barcodesFasta": "File",
+  "VariantCalling.referenceFileDict": "File",
+  "VariantCalling.referenceFileIndex": "File",
+  "VariantCalling.referenceFile": "File",
+  "VariantCalling.subreadsFile": "File",
+  "VariantCalling.referencePrefix": "String"
+}
+```
+
+If you also want to see the optional pipeline inputs, you can leave out the
+`--optional-inputs false` argument.
+
+### Common configuration options
+| Setting                           | Type | Required | Description |
+| --------------------------------- | ---- | -------- | ----------- |
+| VariantCalling.barcodesFasta      | File | Required | Fasta file with the barcodes to be used by Lima for demultiplexing. |
+| VariantCalling.referenceFileDict  | File | Required | The picard dictionary file for the reference. |
+| VariantCalling.referenceFileIndex | File | Required | The samtools index file for the reference. |
+| VariantCalling.referenceFile      | File | Required | The fasta reference file. |
+| VariantCalling.subreadsFile       | File | Required | The subreads bam file. |
+| VariantCalling.referencePrefix    | String | Required | The name of the reference. |
+| VariantCalling.useDeepVariant     | Boolean | Optional | Use DeepVariant instead of GATK4 for variant calling. |
+| VariantCalling.generateGVCF       | Boolean | Optional | Generate g.vcf files for all sample. This is extremely slow when used in combination with `VariantCalling.useDeepVariant`. |
+| VariantCalling.subreadsIndexFile  | File | Optional | The index for the subreads bam file. If not specified, the pipeline will index the subreads file, this takes approximately two hours on 600GB of data. |
+| VariantCalling.limaBarcodes       | File | Optional | TSV file containing the mapping from barcodes to sample names (forward_barcode reverse_barcode sample_name). This is used by MultiQC to rename the barcodes to their apropriate sample names. |
+| VariantCalling.targetGenes        | File | Optional | Bed file containing the target genes. Used to determine the PGx phasing and Picard HsMetrics. |
+
+### Check your configuration file
+If you have create your own configuration file, you can use the following
+command to make sure all inputs are valid. Replace
+`tests/data/config/variant_calling.json` with the path to your own
+configuration file.
+
+```bash
+womtool validate --inputs tests/data/config/variant_calling.json PacBio-variantcalling.wdl
+Success!
+```

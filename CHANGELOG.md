@@ -9,6 +9,7 @@ that users understand how the changes affect the new version.
 -->
 
 v2.0.3-dev
++ Include pbmarkdup in pipeline.
 + Upgrade MultiQC_PGx to latest version.
 + Update documentation and add conda environment file.
 ---------------------------

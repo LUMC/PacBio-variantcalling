@@ -110,6 +110,7 @@ workflow VariantCalling {
             input:
                 in_file = pair.right,
                 out_file = sampleName + ".pbmarkdup.bam",
+                log_file = sampleName + ".pbmarkdup.log"
         }
 
         call pbmm2.Mapping as mapping {

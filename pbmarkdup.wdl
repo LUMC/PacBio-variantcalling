@@ -4,6 +4,7 @@ task Pbmarkdup {
   input {
     File in_file
     String out_file
+    String log_file
 
     Int num_threads = 8
     String memory = "20G"
@@ -15,7 +16,7 @@ task Pbmarkdup {
     pbmarkdup \
       ~{"--num-threads " + num_threads} \
       ~{in_file} \
-      ~{out_file}
+      ~{out_file} > ~{log_file}
   }
 
   runtime {
@@ -28,6 +29,7 @@ task Pbmarkdup {
   output {
       File outputBam = out_file
       File outputBamIndex = out_file + ".pbi"
+      File logFile = log_file
     }
 
   parameter_meta {

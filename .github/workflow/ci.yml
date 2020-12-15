@@ -1,0 +1,61 @@
+name: Continuous Integration
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    # This is needed for miniconda, see:
+    # https://github.com/marketplace/actions/setup-miniconda#important.
+    shell: bash -l {0}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test:
+          - sanity
+          - test-workflow
+          - test-workflow-scatter
+          - test-workflow-no-gvcf
+          - test-workflow-mmi
+          - test-workflow-deepvariant
+          - test-workflow-deepvariant-scatter
+          - test-workflow-deepvariant-no-gvcf
+          - test-workflow-dbsnp
+          - test-workflow-hsmetric
+          - test-workflow-hsmetric-baits
+          - test-workflow-subreads-index
+    steps:
+      - uses: actions/checkout@v2.3.4 # https://github.com/actions/checkout.
+        with:
+          submodules: recursive
+      - name: Install miniconda.
+        uses: conda-incubator/setup-miniconda@v2.0.1 # https://github.com/conda-incubator/setup-miniconda.
+        with:
+          channels: conda-forge,bioconda,defaults
+      - name: Install environment
+        run: conda env create --file environment.yml
+      - name: Acitvate environment
+        run: conda activate PacBio-variantcalling
+      - name: Run test.
+        # Use --symlink to limit disk usage.
+        run: >- 
+          pytest --keep-workflow-wd-on-fail --tag ${{ matrix.test }} 
+          --symlink tests/ 
+      - name: Check cromwell log in case of failure.
+        if: ${{ failure() }}
+        # Get the last 1000 lines of the cromwell log to catch the error.
+        run: bash -c 'tail -n 1000 /tmp/pytest_workflow_*/*/log.out'
+      - name: Check job stderr messages in case of failure
+        if: ${{ failure() }}
+        run: >- 
+          bash -c '
+          for file in $(find /tmp -name stderr); 
+          do echo $file; cat $file; done'
+      - name: Check job stdout messages in case of failure
+        if: ${{ failure() }}
+        run: >- 
+          bash -c '
+          for file in $(find /tmp -name stdout); 
+          do echo $file; cat $file; done'

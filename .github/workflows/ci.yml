@@ -27,18 +27,14 @@ jobs:
           - test-workflow-hsmetric-baits
           - test-workflow-subreads-index
     steps:
+      - name: Run test in conda environment
       - uses: actions/checkout@v2.3.4 # https://github.com/actions/checkout.
         with:
           submodules: recursive
-      - name: Install miniconda.
         uses: conda-incubator/setup-miniconda@v2.0.1 # https://github.com/conda-incubator/setup-miniconda.
         with:
-          channels: conda-forge,bioconda,defaults
-      - name: Install environment
-        run: conda env create --file environment.yml
-      - name: Acitvate environment
-        run: conda activate PacBio-variantcalling
-      - name: Run test.
+          activate-environment: PacBio-variantcalling
+          environment-file: environment.yml
         # Use --symlink to limit disk usage.
         run: >- 
           pytest --keep-workflow-wd-on-fail --tag ${{ matrix.test }} 

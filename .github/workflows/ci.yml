@@ -35,6 +35,7 @@ jobs:
         with:
           activate-environment: PacBio-variantcalling
           environment-file: environment.yml
+          auto-activate-base: false
         # Use --symlink to limit disk usage.
         run: >- 
           pytest --keep-workflow-wd-on-fail --tag ${{ matrix.test }} 

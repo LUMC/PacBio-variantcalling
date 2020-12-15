@@ -36,8 +36,8 @@ jobs:
           environment-file: environment.yml
           auto-activate-base: false
       - name: Run test in conda environment
+        # Use --symlink to limit disk usage.
         run: >- 
-          # Use --symlink to limit disk usage.
           pytest --keep-workflow-wd-on-fail --tag ${{ matrix.test }} 
           --symlink tests/ 
       - name: Check cromwell log in case of failure.

@@ -65,6 +65,8 @@
         - "https://github.com/biowdl/PacBio-variantcalling"
         - "The number of biallelic, heterozygous variants"
         - "% Target Phased"
+        - "% Unique Molecules"
+        - "% Duplicate Reads"
       must_not_contain:
         - "Sample_1_3p--Sample_1_3p"
         - "Sample_3_3p--Sample_3_3p"

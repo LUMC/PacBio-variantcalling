@@ -226,6 +226,11 @@
     --options tests/data/config/cromwell.options.json
     --inputs tests/data/config/variant_calling_dbsnp.json
     PacBio-variantcalling.wdl
+  files:
+    - path: test-output/multiqc/multiqc_report.html
+      contains:
+        - "Variant Types"
+        - "Variant Labels"
 
 - name: test-workflow-hsmetric
   tags:

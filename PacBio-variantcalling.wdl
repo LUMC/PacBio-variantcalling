@@ -299,6 +299,7 @@ workflow VariantCalling {
             [SubreadsProcessing.limaSummary],
             select_all(stats.phasedTSV),
             select_all(pbmarkdup.logFile),
+            select_all(vcfMetrics.details),
     ])
 
     call multiqc.MultiQC as multiqc {

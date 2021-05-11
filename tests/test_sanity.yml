@@ -123,3 +123,14 @@
   stdout:
     contains:
       - "Success!"
+
+- name: validate-workflow-settings-nested
+  tags:
+    - sanity
+  command: >
+    womtool validate
+    --inputs tests/data/config/variant_calling_nested_input.json
+    PacBio-variantcalling.wdl
+  stdout:
+    contains:
+      - "Success!"

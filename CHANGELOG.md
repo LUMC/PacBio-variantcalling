@@ -8,6 +8,10 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
+v2.1.2
+---------------------------
++ Allow nested inputs for better control over individual jobs.
+
 v2.1.1
 ---------------------------
 + Fix bug in MultiQC pbmarkdup module for long library names.

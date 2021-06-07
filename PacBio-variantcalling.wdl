@@ -52,6 +52,10 @@ workflow VariantCalling {
         File? targetBaits
     }
 
+    meta {
+        allowNestedInputs: true
+    }
+
     call SubreadsProcessing.SubreadsProcessing as SubreadsProcessing {
         input:
             subreadsFile = subreadsFile,

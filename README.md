@@ -81,6 +81,8 @@ If you also want to see the optional pipeline inputs, you can leave out the
 | VariantCalling.subreadsIndexFile  | File | Optional | The index for the subreads bam file. If not specified, the pipeline will index the subreads file, this takes approximately two hours on 600GB of data. |
 | VariantCalling.limaBarcodes       | File | Optional | TSV file containing the mapping from barcodes to sample names (forward_barcode reverse_barcode sample_name). This is used by MultiQC to rename the barcodes to their apropriate sample names. |
 | VariantCalling.targetGenes        | File | Optional | Bed file containing the target genes. Used to determine the PGx phasing and Picard HsMetrics. |
+| VariantCalling.dbsnp              | File | Optional | dbSNP file used to annotate the discovered variants. The results are displayed in the MultiQC report. |
+| VariantCalling.dbsnpIndex         | File | Optional | Index for the dbSNP file, required when VariantCalling.dbsnp is specified. |
 
 ### Check your configuration file
 If you have create your own configuration file, you can use the following

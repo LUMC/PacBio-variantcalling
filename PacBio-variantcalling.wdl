@@ -20,7 +20,6 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import "PacBio-subreads-processing/pacbio-subreads-processing.wdl" as SubreadsProcessing
 import "tasks/deepvariant.wdl" as deepvariant
 import "tasks/gatk.wdl" as gatk
 import "tasks/minimap2.wdl" as minimap2
@@ -31,21 +30,22 @@ import "multiqc_pgx.wdl" as multiqc
 import "tasks/chunked-scatter.wdl" as chunkedScatter
 import "pbmarkdup.wdl" as pbmarkdup
 
+struct Sample {
+    String name
+    Array[File]+ bamfiles
+}
+
 workflow VariantCalling {
     input {
-        File subreadsFile
-        File? subreadsIndexFile
-        File barcodesFasta
+        Array[Sample]+ samples
         File referenceFile
         File referenceFileIndex
         File referenceFileDict
         File multiQC_config = "multiqc_config.yml"
-        File? limaBarcodes
         File? referenceFileMMI
         String referencePrefix
         Boolean useDeepVariant = false
         Boolean generateGVCF = false
-        Int ccsChunks = 20
         File? dbsnp
         File? dbsnpIndex
         File? targetGenes
@@ -54,16 +54,6 @@ workflow VariantCalling {
 
     meta {
         allowNestedInputs: true
-    }
-
-    call SubreadsProcessing.SubreadsProcessing as SubreadsProcessing {
-        input:
-            subreadsFile = subreadsFile,
-            subreadsIndexFile = subreadsIndexFile,
-            barcodesFasta = barcodesFasta,
-            limaCores = 8,
-            ccsCores = 8,
-            ccsChunks = ccsChunks
     }
 
     if (!defined(referenceFileMMI)) {
@@ -92,9 +82,6 @@ workflow VariantCalling {
 
     File referenceMMI = select_first([referenceFileMMI, index.indexFile])
 
-    # Combine the sample names with the bam files
-    Array[Pair[String, File]] SampleBam = zip(SubreadsProcessing.samples, SubreadsProcessing.limaReads)
-
     # Determine the scatters for GATK
     call chunkedScatter.ScatterRegions as scatterList {
         input:
@@ -103,18 +90,18 @@ workflow VariantCalling {
     }
 
 
-    scatter (pair in SampleBam) {
+    scatter (sample in samples) {
         # We need to know the order of the samples for MultiQC_PGx
-        String sampleName = pair.left
+        String sampleName = sample.name
 
         # Run markduplicates on a per sample bases, that should be easier than
         # running it on the CCS output file (since we don't need to compare
         # reads across samples).
         call pbmarkdup.Pbmarkdup as pbmarkdup {
             input:
-                in_file = pair.right,
-                out_file = sampleName + ".pbmarkdup.bam",
-                log_file = sampleName + ".pbmarkdup.log"
+                in_file = sample.bamfiles,
+                out_file = sample.name + ".pbmarkdup.bam",
+                log_file = sample.name + ".pbmarkdup.log"
         }
 
         call pbmm2.Mapping as mapping {
@@ -122,7 +109,7 @@ workflow VariantCalling {
                 presetOption = "CCS",
                 sort = true,
                 referenceMMI = referenceMMI,
-                sample = pair.left,
+                sample = sample.name,
                 queryFile = pbmarkdup.outputBam
         }
 
@@ -133,7 +120,7 @@ workflow VariantCalling {
                 referenceFasta = referenceFile,
                 referenceFastaDict = referenceFileDict,
                 referenceFastaFai = referenceFileIndex,
-                basename = pair.left,
+                basename = sample.name,
                 collectInsertSizeMetrics = false,
                 meanQualityByCycle = false,
                 collectBaseDistributionByCycle = false
@@ -147,7 +134,7 @@ workflow VariantCalling {
                     referenceFasta = referenceFile,
                     referenceFastaDict = referenceFileDict,
                     referenceFastaFai = referenceFileIndex,
-                    basename = pair.left,
+                    basename = sample.name,
                     targets = select_first([targetToInterval.intervalList]),
                     baits = select_first([baitsToInterval.intervalList,
                             targetToInterval.intervalList])
@@ -160,7 +147,7 @@ workflow VariantCalling {
                     input:
                         inputBams = [mapping.outputAlignmentFile],
                         inputBamsIndex = [mapping.outputIndexFile],
-                        outputPath = pair.left + ".g.vcf.gz",
+                        outputPath = sample.name + ".g.vcf.gz",
                         referenceFasta = referenceFile,
                         referenceFastaIndex = referenceFileIndex,
                         intervalList = [region],
@@ -173,7 +160,7 @@ workflow VariantCalling {
                     input:
                         gvcfFile = gvcf.outputVCF,
                         gvcfFileIndex = gvcf.outputVCFIndex,
-                        outputPath = pair.left + ".vcf.gz",
+                        outputPath = sample.name + ".vcf.gz",
                         referenceFasta = referenceFile,
                         intervals = [region],
                         referenceFastaFai = referenceFileIndex,
@@ -186,7 +173,7 @@ workflow VariantCalling {
                 input:
                     inputVCFs = gvcf.outputVCF,
                     inputVCFsIndexes = gvcf.outputVCFIndex,
-                    outputVcfPath = pair.left + ".g.vcf.gz"
+                    outputVcfPath = sample.name + ".g.vcf.gz"
             }
 
             # Merge the vcf files
@@ -194,7 +181,7 @@ workflow VariantCalling {
                 input:
                     inputVCFs = gatkVCF.outputVCF,
                     inputVCFsIndexes = gatkVCF.outputVCFIndex,
-                    outputVcfPath = pair.left + ".vcf.gz"
+                    outputVcfPath = sample.name + ".vcf.gz"
             }
         }
 
@@ -203,8 +190,8 @@ workflow VariantCalling {
                 String scatterName = basename(region)
 
                 if (generateGVCF) {
-                    String outputGVcf = pair.left + "_" + scatterName + ".g.vcf.gz"
-                    String outputGVcfIndex = pair.left + "_" + scatterName + ".g.vcf.gz.tbi"
+                    String outputGVcf = sample.name + "_" + scatterName + ".g.vcf.gz"
+                    String outputGVcfIndex = sample.name + "_" + scatterName + ".g.vcf.gz.tbi"
                 }
                 call deepvariant.RunDeepVariant as DeepVariant{
                     input:
@@ -215,8 +202,8 @@ workflow VariantCalling {
                         modelType = "PACBIO",
                         postprocessVariantsExtraArgs = "cnn_homref_call_min_gq=0",
                         regions = region,
-                        sampleName = pair.left,
-                        outputVcf = pair.left + "_" + scatterName + ".vcf.gz",
+                        sampleName = sample.name,
+                        outputVcf = sample.name + "_" + scatterName + ".vcf.gz",
                         outputGVcf = outputGVcf,
                         outputGVcfIndex = outputGVcfIndex
                 }
@@ -227,7 +214,7 @@ workflow VariantCalling {
                 input:
                     inputVCFs = DeepVariant.outputVCF,
                     inputVCFsIndexes = DeepVariant.outputVCFIndex,
-                    outputVcfPath = pair.left + ".vcf.gz"
+                    outputVcfPath = sample.name + ".vcf.gz"
             }
             # Merge the DeepVariant GVCF files if they were generated
             if (generateGVCF) {
@@ -235,7 +222,7 @@ workflow VariantCalling {
                     input:
                         inputVCFs = select_all(DeepVariant.outputGVCF),
                         inputVCFsIndexes = select_all(DeepVariant.outputGVCFIndex),
-                        outputVcfPath = pair.left + ".g.vcf.gz",
+                        outputVcfPath = sample.name + ".g.vcf.gz",
                 }
             }
         }
@@ -259,7 +246,7 @@ workflow VariantCalling {
                indels = true,
                reference = referenceFile,
                referenceIndex = referenceFileIndex,
-               outputVCF = pair.left + ".phased.vcf.gz"
+               outputVCF = sample.name + ".phased.vcf.gz"
         }
 
         if (defined(dbsnp)) {
@@ -269,21 +256,21 @@ workflow VariantCalling {
                     dbsnpIndex = select_first([dbsnpIndex]),
                     inputVCF = phase.phasedVCF,
                     inputVCFIndex = phase.phasedVCFIndex,
-                    basename = pair.left
+                    basename = sample.name,
             }
         }
 
         call whatshap.Stats as stats {
             input:
                 vcf = phase.phasedVCF,
-                gtf = pair.left + ".phased.gtf",
-                tsv = pair.left + ".phased.tsv",
-                blockList = pair.left + ".phased.blocklist"
+                gtf = sample.name + ".phased.gtf",
+                tsv = sample.name + ".phased.tsv",
+                blockList = sample.name + ".phased.blocklist"
         }
 
         call whatshap.Haplotag as haplotag {
             input:
-                outputFile = pair.left + ".haplotagged.bam",
+                outputFile = sample.name + ".haplotagged.bam",
                 reference = referenceFile,
                 referenceFastaIndex = referenceFileIndex,
                 vcf = phase.phasedVCF,
@@ -298,9 +285,6 @@ workflow VariantCalling {
             select_all(picard_multiple_metrics.qualityDistribution),
             select_all(picard_multiple_metrics.gcBiasDetail),
             select_all(picard_hs_metrics.HsMetrics),
-            [SubreadsProcessing.ccsReport],
-            [SubreadsProcessing.limaCounts],
-            [SubreadsProcessing.limaSummary],
             select_all(stats.phasedTSV),
             select_all(pbmarkdup.logFile),
             select_all(vcfMetrics.details),
@@ -311,7 +295,6 @@ workflow VariantCalling {
             reports = qualityReports,
             outDir = "multiqc",
             dataFormat = "json",
-            limaBarcodes = limaBarcodes,
             targetGenes = targetGenes,
             config = multiQC_config,
             whatshapBlocklist = select_all(stats.phasedBlockList),
@@ -341,17 +324,12 @@ workflow VariantCalling {
         referenceFileIndex: {description: "The samtools index file for the reference.", category: "required"}
         referenceFileDict: {description: "The picard dictionary file for the reference.", category: "required"}
         referenceFileMMI: {description: "The minimap2 mmi file for the reference.", category: "optional"}
-        subreadsFile: {description: "Subreads input bam file.", category: "required"}
-        subreadsIndexFile: {description: "PacBio index file for the subreads input bam file.", category: "common"}
         useDeepVariant: {description: "Use DeepVariant caller, the default is to use GATK4.", category: "common"}
         targetGenes: {description: "Bed file containing the target genes. Used to determine the PGx phasing and Picard HsMetrics.", category: "optional"}
         targetBaits: {description: "Bed file containing the baits for the target genes. Used by Picard HsMetrics.", category: "optional"}
         dbsnp: {description: "DBSNP vcf file, to be used with Picard CollectVariantCallingMetrics.", category: "optional"}
         dbsnpIndex: {description: "Index for the DBSNP vcf file, to be used with Picard CollectVariantCallingMetrics.", category: "optional"}
-        ccsChunks: {description: "Number of scatters to use when calling CCS.", category: "optional"}
         generateGVCF: {description: "Should g.vcf files be produced by the pipeline. This is extremely slow when used in combination with useDeepVariant.", category: "advanced"}
-        barcodesFasta: {description: "Fasta file with the barcodes to be used by Lima for demultiplexing.", category: "required"}
-        limaBarcodes: {description: "TSV file containing the mapping from barcodes to sample names (forward_barcode \t reverse_barcode \t sample_name). This is used by MultiQC to rename the barcodes to their apropriate sample names.", category: "optional"}
         multiQC_config: {description: "Configuration file for MultiQC, can be used to customise the final report.", category: "advanced"}
     }
 }

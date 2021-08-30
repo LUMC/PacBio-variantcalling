@@ -1,11 +1,16 @@
 {
-    "VariantCalling.subreadsFile": "PacBio-subreads-processing/tests/data/batch.1.march.subreads.bam",
-    "VariantCalling.barcodesFasta": "PacBio-subreads-processing/tests/data/batch.1.march.barcodes.fasta",
     "VariantCalling.referenceFile": "tests/data/reference/LC029411.fasta",
     "VariantCalling.referenceFileMMI": "tests/data/reference/LC029411.mmi",
     "VariantCalling.referenceFileIndex": "tests/data/reference/LC029411.fasta.fai",
     "VariantCalling.referenceFileDict": "tests/data/reference/LC029411.dict",
-    "VariantCalling.ccsChunks": "1",
     "VariantCalling.generateGVCF": true,
-    "VariantCalling.referencePrefix": "LC029411"
+    "VariantCalling.referencePrefix": "LC029411",
+    "VariantCalling.samples": [
+        {
+            "name": "Sample_1_3p",
+            "bamfiles": [
+                "tests/data/bamfiles/batch.1.march.Sample_1_3p--Sample_1_3p.bam"
+            ]
+        }
+    ]
 }

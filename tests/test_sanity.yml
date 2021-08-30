@@ -123,3 +123,14 @@
   stdout:
     contains:
       - "Success!"
+
+- name: validate-workflow-settings-deepvariant-no-gvcf
+  tags:
+    - sanity
+  command: >
+    womtool validate
+    --inputs tests/data/config/variant_calling_DeepVariant_no_gvcf.json
+    PacBio-variantcalling.wdl
+  stdout:
+    contains:
+      - "Success!"

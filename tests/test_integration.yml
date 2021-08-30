@@ -156,15 +156,15 @@
         - "LC029411\t1\t.\tT\t.*END=1000"
         - "LC029411\t1001\t.\tT\t.*\tEND=2000"
         - "LC029411\t4601\t.\tCACCTATAAAAAAAATAATTACTTAGGGCCTTTTAATATTTTATTATTTATCTAAATATAAGTTAGTT\tC,.*GT:GQ:DP:AD:VAF:PL\t0/0"
-    - path: test-output/Sample_4_3p.g.vcf.gz
-    - path: test-output/Sample_4_3p.g.vcf.gz.tbi
-    - path: test-output/Sample_4_3p.phased.vcf.gz
-    - path: test-output/Sample_4_3p.phased.vcf.gz.tbi
-    - path: test-output/Sample_4_3p.haplotagged.bam
-    - path: test-output/Sample_4_3p.haplotagged.bam.bai
-    - path: test-output/Sample_4_3p.phased.gtf
-    - path: test-output/Sample_4_3p.phased.tsv
-    - path: test-output/Sample_4_3p.phased.blocklist
+    - path: test-output/Sample_1_3p.g.vcf.gz
+    - path: test-output/Sample_1_3p.g.vcf.gz.tbi
+    - path: test-output/Sample_1_3p.phased.vcf.gz
+    - path: test-output/Sample_1_3p.phased.vcf.gz.tbi
+    - path: test-output/Sample_1_3p.haplotagged.bam
+    - path: test-output/Sample_1_3p.haplotagged.bam.bai
+    - path: test-output/Sample_1_3p.phased.gtf
+    - path: test-output/Sample_1_3p.phased.tsv
+    - path: test-output/Sample_1_3p.phased.blocklist
 
 - name: test-workflow-deepvariant-scatter
   tags:

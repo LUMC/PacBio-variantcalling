@@ -115,11 +115,11 @@
       - 'Starting VariantCalling.index'
       - '/opt/deepvariant/bin/run_deepvariant'
   files:
-    - path: test-output/Sample_4_3p.g.vcf.gz
-    - path: test-output/Sample_4_3p.phased.vcf.gz
-    - path: test-output/Sample_4_3p.phased.gtf
-    - path: test-output/Sample_4_3p.phased.tsv
-    - path: test-output/Sample_4_3p.phased.blocklist
+    - path: test-output/Sample_1_3p.g.vcf.gz
+    - path: test-output/Sample_1_3p.phased.vcf.gz
+    - path: test-output/Sample_1_3p.phased.gtf
+    - path: test-output/Sample_1_3p.phased.tsv
+    - path: test-output/Sample_1_3p.phased.blocklist
     - path: test-output/multiqc/multiqc_report.html
       contains:
         - "block_n50"

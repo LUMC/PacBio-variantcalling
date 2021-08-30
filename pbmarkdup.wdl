@@ -2,7 +2,7 @@ version 1.0
 
 task Pbmarkdup {
   input {
-    File in_file
+    Array[File] in_file
     String out_file
     String log_file
 
@@ -15,7 +15,7 @@ task Pbmarkdup {
   command {
     pbmarkdup \
       ~{"--num-threads " + num_threads} \
-      ~{in_file} \
+      ~{sep=' ' in_file} \
       ~{out_file} > ~{log_file}
   }
 

@@ -11,6 +11,18 @@
             "bamfiles": [
                 "tests/data/bamfiles/batch.1.march.Sample_1_3p--Sample_1_3p.bam"
             ]
+        },
+        {
+            "name": "Sample_3_3p",
+            "bamfiles": [
+                "tests/data/bamfiles/batch.1.march.Sample_1_3p--Sample_1_3p.bam"
+            ]
+        },
+        {
+            "name": "Sample_4_3p",
+            "bamfiles": [
+                "tests/data/bamfiles/batch.1.march.Sample_1_3p--Sample_1_3p.bam"
+            ]
         }
     ]
 }

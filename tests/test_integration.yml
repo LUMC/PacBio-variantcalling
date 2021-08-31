@@ -264,3 +264,19 @@
         - "HSMetrics"
         - "Target Region Coverage"
     - path: test-output/multiqc/multiqc_data.zip
+
+# Test if both bam files are used with variant caling
+- name: test-workflow-two-bamfiles
+  tags:
+    - integration
+  command: >
+    cromwell run
+    --options tests/data/config/cromwell.options.json
+    --inputs tests/data/config/variant_calling_two_bamfiles.json
+    PacBio-variantcalling.wdl
+  files:
+    - path: test-output/Sample_1_3p.phased.vcf.gz
+      contains_regex:
+        # This tests of both bam files were used for variant calling, the first
+        # bam file has 1/1, the second has 0/0.
+        - "LC029411	4601	.*	GT:AD:DP.*	0/1:2,2:4"

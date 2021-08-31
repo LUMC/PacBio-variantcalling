@@ -25,6 +25,7 @@ jobs:
           - test-workflow-dbsnp
           - test-workflow-hsmetric
           - test-workflow-hsmetric-baits
+          - test-workflow-two-bamfiles
     steps:
       - uses: actions/checkout@v2.3.4 # https://github.com/actions/checkout.
         with:

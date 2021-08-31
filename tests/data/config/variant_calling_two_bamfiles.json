@@ -1,0 +1,17 @@
+{
+    "VariantCalling.referenceFile": "tests/data/reference/LC029411.fasta",
+    "VariantCalling.referenceFileIndex": "tests/data/reference/LC029411.fasta.fai",
+    "VariantCalling.referenceFileDict": "tests/data/reference/LC029411.dict",
+    "VariantCalling.referencePrefix": "LC029411",
+    "VariantCalling.targetGenes": "tests/data/config/target_genes.bed",
+    "VariantCalling.generateGVCF": true,
+    "VariantCalling.samples": [
+        {
+            "name": "Sample_1_3p",
+            "bamfiles": [
+                "tests/data/bamfiles/batch.1.march.Sample_1_3p--Sample_1_3p.bam",
+                "tests/data/bamfiles/batch.1.march.Sample_4_3p--Sample_4_3p.bam"
+            ]
+        }
+    ]
+}

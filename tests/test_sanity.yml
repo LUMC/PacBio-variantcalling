@@ -134,3 +134,14 @@
   stdout:
     contains:
       - "Success!"
+
+- name: validate-workflow-settings-two-bamfiles
+  tags:
+    - sanity
+  command: >
+    womtool validate
+    --inputs tests/data/config/variant_calling_two_bamfiles.json
+    PacBio-variantcalling.wdl
+  stdout:
+    contains:
+      - "Success!"

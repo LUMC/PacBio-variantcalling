@@ -55,11 +55,10 @@ following command.
 ```bash
 womtool inputs --optional-inputs false PacBio-variantcalling.wdl
 {
-  "VariantCalling.barcodesFasta": "File",
+  "VariantCalling.samples": "Array[WomCompositeType {\n name -> String\nbamfiles -> Array[File]+ \n}]+",
   "VariantCalling.referenceFileDict": "File",
   "VariantCalling.referenceFileIndex": "File",
   "VariantCalling.referenceFile": "File",
-  "VariantCalling.subreadsFile": "File",
   "VariantCalling.referencePrefix": "String"
 }
 ```
@@ -70,16 +69,13 @@ If you also want to see the optional pipeline inputs, you can leave out the
 ### Common configuration options
 | Setting                           | Type | Required | Description |
 | --------------------------------- | ---- | -------- | ----------- |
-| VariantCalling.barcodesFasta      | File | Required | Fasta file with the barcodes to be used by Lima for demultiplexing. |
+| VariantCalling.samples            | Array| Required | One or more sample structs. |
 | VariantCalling.referenceFileDict  | File | Required | The picard dictionary file for the reference. |
 | VariantCalling.referenceFileIndex | File | Required | The samtools index file for the reference. |
 | VariantCalling.referenceFile      | File | Required | The fasta reference file. |
-| VariantCalling.subreadsFile       | File | Required | The subreads bam file. |
 | VariantCalling.referencePrefix    | String | Required | The name of the reference. |
 | VariantCalling.useDeepVariant     | Boolean | Optional | Use DeepVariant instead of GATK4 for variant calling. |
 | VariantCalling.generateGVCF       | Boolean | Optional | Generate g.vcf files for all sample. This is extremely slow when used in combination with `VariantCalling.useDeepVariant`. |
-| VariantCalling.subreadsIndexFile  | File | Optional | The index for the subreads bam file. If not specified, the pipeline will index the subreads file, this takes approximately two hours on 600GB of data. |
-| VariantCalling.limaBarcodes       | File | Optional | TSV file containing the mapping from barcodes to sample names (forward_barcode reverse_barcode sample_name). This is used by MultiQC to rename the barcodes to their apropriate sample names. |
 | VariantCalling.targetGenes        | File | Optional | Bed file containing the target genes. Used to determine the PGx phasing and Picard HsMetrics. |
 | VariantCalling.dbsnp              | File | Optional | dbSNP file used to annotate the discovered variants. The results are displayed in the MultiQC report. |
 | VariantCalling.dbsnpIndex         | File | Optional | Index for the dbSNP file, required when VariantCalling.dbsnp is specified. |

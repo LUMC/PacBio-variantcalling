@@ -8,6 +8,16 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
+v3.0.0
+---------------------------
++ CSS calling and demultiplexing with Lima have been removed from the pipeline.
+  PacBio-variantcalling now expects one or more post-CCS bam files per sample,
+  and only performs variantcalling.
+
+v2.1.2
+---------------------------
++ Allow nested inputs for better control over individual jobs.
+
 v2.1.1
 ---------------------------
 + Fix bug in MultiQC pbmarkdup module for long library names.

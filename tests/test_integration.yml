@@ -8,18 +8,15 @@
     PacBio-variantcalling.wdl
   stdout:
     contains_regex:
-      - 'SubreadsProcessing.limaReads.*batch.1.march.Sample_1_3p--Sample_1_3p.bam'
       - 'Starting .*VariantCalling.index'
       - 'Starting .*VariantCalling.targetToInterval'
-      - 'Starting .*SubreadsProcessing.pbindex'
       - 'Starting .*VariantCalling.combineVCFs'
       - 'Starting .*VariantCalling.combineGVCFs'
     contains:
+      # Test theads for pbmarkdup
       - '--num-threads 8'
-      - '--chunk 1/1'
+      # Test chunked scatter
       - '--scatter-size 350000000'
-    must_not_contain:
-      - "--chunk 5/20"
 
   files:
     - path: test-output/Sample_1_3p.g.vcf.gz
@@ -49,10 +46,6 @@
         - "Aligned Reads"
         - "Aligned Bases"
         - "Mean Read Length"
-        - "ZMWs filtered and passed"
-        - "Counts"
-        - "MeanScore"
-        - "ZMWs filtered by Lima"
         - "block_n50"
         - "variant_per_block_avg"
         - "Phasing per sample"
@@ -67,10 +60,6 @@
         - "% Target Phased"
         - "% Unique Molecules"
         - "% Duplicate Reads"
-      must_not_contain:
-        - "Sample_1_3p--Sample_1_3p"
-        - "Sample_3_3p--Sample_3_3p"
-        - "Sample_4_3p--Sample_4_3p"
 
 - name: test-workflow-scatter
   tags:
@@ -126,11 +115,11 @@
       - 'Starting VariantCalling.index'
       - '/opt/deepvariant/bin/run_deepvariant'
   files:
-    - path: test-output/Sample_4_3p.g.vcf.gz
-    - path: test-output/Sample_4_3p.phased.vcf.gz
-    - path: test-output/Sample_4_3p.phased.gtf
-    - path: test-output/Sample_4_3p.phased.tsv
-    - path: test-output/Sample_4_3p.phased.blocklist
+    - path: test-output/Sample_1_3p.g.vcf.gz
+    - path: test-output/Sample_1_3p.phased.vcf.gz
+    - path: test-output/Sample_1_3p.phased.gtf
+    - path: test-output/Sample_1_3p.phased.tsv
+    - path: test-output/Sample_1_3p.phased.blocklist
     - path: test-output/multiqc/multiqc_report.html
       contains:
         - "block_n50"
@@ -167,15 +156,15 @@
         - "LC029411\t1\t.\tT\t.*END=1000"
         - "LC029411\t1001\t.\tT\t.*\tEND=2000"
         - "LC029411\t4601\t.\tCACCTATAAAAAAAATAATTACTTAGGGCCTTTTAATATTTTATTATTTATCTAAATATAAGTTAGTT\tC,.*GT:GQ:DP:AD:VAF:PL\t0/0"
-    - path: test-output/Sample_4_3p.g.vcf.gz
-    - path: test-output/Sample_4_3p.g.vcf.gz.tbi
-    - path: test-output/Sample_4_3p.phased.vcf.gz
-    - path: test-output/Sample_4_3p.phased.vcf.gz.tbi
-    - path: test-output/Sample_4_3p.haplotagged.bam
-    - path: test-output/Sample_4_3p.haplotagged.bam.bai
-    - path: test-output/Sample_4_3p.phased.gtf
-    - path: test-output/Sample_4_3p.phased.tsv
-    - path: test-output/Sample_4_3p.phased.blocklist
+    - path: test-output/Sample_1_3p.g.vcf.gz
+    - path: test-output/Sample_1_3p.g.vcf.gz.tbi
+    - path: test-output/Sample_1_3p.phased.vcf.gz
+    - path: test-output/Sample_1_3p.phased.vcf.gz.tbi
+    - path: test-output/Sample_1_3p.haplotagged.bam
+    - path: test-output/Sample_1_3p.haplotagged.bam.bai
+    - path: test-output/Sample_1_3p.phased.gtf
+    - path: test-output/Sample_1_3p.phased.tsv
+    - path: test-output/Sample_1_3p.phased.blocklist
 
 - name: test-workflow-deepvariant-scatter
   tags:
@@ -276,14 +265,18 @@
         - "Target Region Coverage"
     - path: test-output/multiqc/multiqc_data.zip
 
-- name: test-workflow-subreads-index
+# Test if both bam files are used with variant caling
+- name: test-workflow-two-bamfiles
   tags:
     - integration
   command: >
     cromwell run
     --options tests/data/config/cromwell.options.json
-    --inputs tests/data/config/variant_calling_subreads_index.json
+    --inputs tests/data/config/variant_calling_two_bamfiles.json
     PacBio-variantcalling.wdl
-  stdout:
-      must_not_contain_regex:
-        - 'Starting .*SubreadsProcessing.pbindex'
+  files:
+    - path: test-output/Sample_1_3p.phased.vcf.gz
+      contains_regex:
+        # This tests of both bam files were used for variant calling, the first
+        # bam file has 1/1, the second has 0/0.
+        - "LC029411	4601	.*	GT:AD:DP.*	0/1:2,2:4"

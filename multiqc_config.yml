@@ -1,10 +1,10 @@
 title: "LUMC PGx"
 subtitle: "MultiQC report for the PacBio-variantcalling pipeline"
-intro_text: "This report contians QC data for the tools that are part of the PacBio-variantcalling pipeline. The first step of this pipeline is running CCS on the subreads bam file, and then Lima to demultiplex the samples. Reads are mapped against the reference using pbmm2, and variants are called using GATK4 or DeepVariant. Finally, phased BAM and VCF files are generated using WhatsHap."
+intro_text: "This report contians QC data for the tools that are part of the PacBio-variantcalling pipeline. Reads are mapped against the reference using pbmm2, and variants are called using GATK4 or DeepVariant. Finally, phased BAM and VCF files are generated using WhatsHap."
 report_comment: "The sections under the PGx heading are custom for this project, all other reports are part MultiQC itself"
 
 report_header_info:
-  - Pipeline: 'https://github.com/biowdl/PacBio-variantcalling'
+  - Pipeline: 'https://github.com/LUMC/PacBio-variantcalling'
   - Platform: 'PacBio HiFi'
   - Project: 'LUMC PGx'
 
